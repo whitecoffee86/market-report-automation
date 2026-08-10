@@ -95,6 +95,10 @@
   #status{font-size:12.5px; color:var(--sub); align-self:center;}
   #status.ok{color:#1a7a4c; font-weight:700;}
   .hint{font-size:11px; color:var(--sub); margin-top:2px;}
+  .swatch{
+    display:inline-block; width:10px; height:10px; border-radius:50%;
+    background:#ccc; vertical-align:middle; margin-left:4px; border:1px solid rgba(0,0,0,.15);
+  }
 </style>
 </head>
 <body>
@@ -212,26 +216,26 @@
 
     <div class="subhead">등급표 <span class="tag">S/A는 파란 배지, B/C/D는 연한 배지로 자동 표시</span></div>
     <div class="grid g5">
-      <div class="field"><label>수급</label><input id="g_supply" maxlength="1" placeholder="C"></div>
-      <div class="field"><label>가격</label><input id="g_price" maxlength="1" placeholder="S"></div>
-      <div class="field"><label>거래</label><input id="g_deal" maxlength="1" placeholder="B"></div>
-      <div class="field"><label>분양</label><input id="g_presale" maxlength="1" placeholder="A"></div>
-      <div class="field"><label>미분양</label><input id="g_unsold" maxlength="1" placeholder="S"></div>
+      <div class="field"><label>수급 <span class="swatch" id="sw_g_supply"></span></label><input id="g_supply" maxlength="1" placeholder="C"></div>
+      <div class="field"><label>가격 <span class="swatch" id="sw_g_price"></span></label><input id="g_price" maxlength="1" placeholder="S"></div>
+      <div class="field"><label>거래 <span class="swatch" id="sw_g_deal"></span></label><input id="g_deal" maxlength="1" placeholder="B"></div>
+      <div class="field"><label>분양 <span class="swatch" id="sw_g_presale"></span></label><input id="g_presale" maxlength="1" placeholder="A"></div>
+      <div class="field"><label>미분양 <span class="swatch" id="sw_g_unsold"></span></label><input id="g_unsold" maxlength="1" placeholder="S"></div>
     </div>
 
     <div class="subhead">검토의견 판정 <span class="tag">양호=초록 · 보통=주황 · 주의=빨강 자동 매칭</span></div>
     <div class="grid g3">
-      <div class="field"><label>입지 및 시장환경</label>
+      <div class="field"><label>입지 및 시장환경 <span class="swatch" id="sw_j_location"></span></label>
         <select id="j_location"><option>양호</option><option>보통</option><option>주의</option></select></div>
-      <div class="field"><label>상품</label>
+      <div class="field"><label>상품 <span class="swatch" id="sw_j_product"></span></label>
         <select id="j_product"><option>양호</option><option>보통</option><option>주의</option></select></div>
-      <div class="field"><label>브랜드 영향</label>
+      <div class="field"><label>브랜드 영향 <span class="swatch" id="sw_j_brand"></span></label>
         <select id="j_brand"><option>양호</option><option>보통</option><option>주의</option></select></div>
     </div>
 
     <div class="subhead">분양등급 <span class="tag">등급만 고르면 개월수(D+n M)는 자동으로 채워짐</span></div>
     <div class="grid g3">
-      <div class="field"><label>최종 분양등급</label>
+      <div class="field"><label>최종 분양등급 <span class="swatch" id="sw_final_grade"></span></label>
         <select id="final_grade"><option>S</option><option selected>A</option><option>B</option><option>C</option><option>D</option></select></div>
       <div class="field"><label>개월수 직접 지정 (선택, 비워두면 자동)</label><input id="final_grade_note" placeholder="예: D+4M"></div>
     </div>
@@ -320,6 +324,29 @@ addOpinionRow("서울 역세권의 양호 입지에도 불구하고 열위한 �
 
 function v(id){ const el = document.getElementById(id); return el ? el.value.trim() : ''; }
 function num(id){ const x = parseFloat(v(id)); return isNaN(x)?0:x; }
+
+// 색상 스와치 실시간 미리보기 - 실제 PPT에 어떤 색으로 나올지 바로 확인 가능
+const JUDGE_COLORS = {"양호":"#2E9E4F", "보통":"#E8A93B", "주의":"#C0392B"};
+const GRADE_BLUE = "#0070C0", GRADE_LIGHT = "#cfe0ea";
+function updateGradeSwatch(inputId, swatchId){
+  const val = v(inputId).toUpperCase();
+  const sw = document.getElementById(swatchId);
+  sw.style.background = (val === 'S' || val === 'A') ? GRADE_BLUE : GRADE_LIGHT;
+}
+function updateJudgeSwatch(selectId, swatchId){
+  const val = v(selectId);
+  document.getElementById(swatchId).style.background = JUDGE_COLORS[val] || '#ccc';
+}
+['g_supply','g_price','g_deal','g_presale','g_unsold'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', ()=> updateGradeSwatch(id, 'sw_'+id));
+  updateGradeSwatch(id, 'sw_'+id);
+});
+['j_location','j_product','j_brand'].forEach(id=>{
+  document.getElementById(id).addEventListener('change', ()=> updateJudgeSwatch(id, 'sw_'+id));
+  updateJudgeSwatch(id, 'sw_'+id);
+});
+document.getElementById('final_grade').addEventListener('change', ()=> updateGradeSwatch('final_grade','sw_final_grade'));
+updateGradeSwatch('final_grade','sw_final_grade');
 
 function buildData(){
   const n = parseInt(dongCountSelect.value, 10);
