@@ -123,12 +123,23 @@ def fill_text(slide, d):
     for col, key in enumerate(order2):
         tbl.cell(1, col).text_frame.paragraphs[0].runs[0].text = clean_text(judge[key])
 
-    # 작성자 가이드 문구(안내용 콜아웃) 비우기 - 최종 보고서에는 불필요
-    for gid in (13, 14, 19):
-        grp = S(gid)
-        for shp in grp.shapes:
-            if shp.has_text_frame and shp.text_frame.text.strip():
-                clear_shape_text(shp)
+    # 판정 옆 색상 점(입지/수급/브랜드/상품) - 실제 판정값에 맞는 색으로 자동 변경
+    JUDGE_COLORS = {"양호": "2E9E4F", "보통": "E8A93B", "신중": "C0392B"}
+    dot_ids_by_col = {"location": 33, "supply": 32, "brand": 62, "product": 61}
+    from pptx.dml.color import RGBColor
+    for key, sid in dot_ids_by_col.items():
+        color_hex = JUDGE_COLORS.get(judge[key])
+        if color_hex:
+            S(sid).fill.fore_color.rgb = RGBColor.from_string(color_hex)
+
+    # 작성자 가이드 문구(안내용 콜아웃) 완전히 제거 - 상자·연결선·표시점까지 전부 삭제
+    guide_group_ids = [13, 14, 19, 36, 26]   # 작성요령 안내 박스 4개 + 첨부연결 범례
+    guide_dot_ids = [8, 24]  # 편집 안내용 표시점 (61,62,32,33은 입지/수급/브랜드/상품 판정 실제 색상 점이라 유지)
+    for sid in guide_group_ids + guide_dot_ids:
+        shp = S(sid)
+        if shp is not None:
+            el = shp._element
+            el.getparent().remove(el)
 
 
 def fill_charts(slide, d):
@@ -195,6 +206,36 @@ def fill_stock_chart(pptx_path, d):
 
         num_cache = ser.find(".//c:val//c:numCache", NS)
         rebuild_pts(num_cache, series[key])
+
+    # y축(값 축)을 실제 데이터 범위에 맞게 자동으로 움직이게 설정
+    # (원본 템플릿은 5~19로 고정되어 있어, 값이 낮은 지역은 차트 아래쪽에 눌려 보이는 문제가 있었음)
+    all_vals = list(series["high"]) + list(series["low"]) + list(series["avg"])
+    data_min, data_max = min(all_vals), max(all_vals)
+    pad = max((data_max - data_min) * 0.2, 1)
+    new_min = max(0, int(data_min - pad))
+    new_max = int(data_max + pad) + 1
+    unit = max(1, round((new_max - new_min) / 5))
+
+    val_ax = root.find(".//c:valAx", NS)
+    scaling = val_ax.find("c:scaling", NS)
+    for tag in ("c:max", "c:min"):
+        el = scaling.find(tag, NS)
+        if el is not None:
+            scaling.remove(el)
+    max_el = etree.SubElement(scaling, f"{{{C_NS}}}max")
+    max_el.set("val", str(new_max))
+    min_el = etree.SubElement(scaling, f"{{{C_NS}}}min")
+    min_el.set("val", str(new_min))
+    # min/max는 scaling 안에서 orientation 다음에 와야 하므로 순서 재정렬
+    orientation = scaling.find("c:orientation", NS)
+    scaling.remove(max_el)
+    scaling.remove(min_el)
+    orientation.addnext(max_el)
+    max_el.addnext(min_el)
+
+    major_unit = val_ax.find("c:majorUnit", NS)
+    if major_unit is not None:
+        major_unit.set("val", str(unit))
 
     tree.write(chart_path, xml_declaration=True, encoding="UTF-8", standalone=True)
 
