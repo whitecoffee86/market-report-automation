@@ -1,0 +1,115 @@
+{
+  "title": "",
+  "date": "",
+  "region_grade": "",
+  "pyeong": "",
+  "site_price_py": "",
+  "site_price_eok": "",
+  "compare1_name": "",
+  "compare1_price_py": "",
+  "compare1_price_eok": 0,
+  "compare2_name": "",
+  "compare2_price_py": "",
+  "compare2_price_eok": 0,
+  "loc_transport": "",
+  "loc_life": "",
+  "loc_dev": "",
+  "region_summary_1": "",
+  "region_summary_2": "",
+  "hierarchy_note": "",
+  "region_name": "",
+  "region_avg_eok": "",
+  "stock_labels": [
+    {
+      "name": "",
+      "built": "",
+      "units": ""
+    },
+    {
+      "name": "",
+      "built": "",
+      "units": ""
+    },
+    {
+      "name": "",
+      "built": "",
+      "units": ""
+    },
+    {
+      "name": "",
+      "built": "",
+      "units": ""
+    },
+    {
+      "name": "",
+      "built": "",
+      "units": ""
+    }
+  ],
+  "stock_dongs": [
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  "stock_series": {
+    "high": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "low": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "avg": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "grade_table": {
+    "supply": "",
+    "price": "",
+    "deal": "",
+    "presale": "",
+    "unsold": ""
+  },
+  "judge_table": {
+    "location": "양호",
+    "supply": "양호",
+    "brand": "양호",
+    "product": "양호"
+  },
+  "radar": {
+    "compare1": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "compare2": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "site": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  }
+}
