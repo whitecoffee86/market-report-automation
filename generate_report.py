@@ -32,11 +32,18 @@ def find_by_id(shapes, sid):
     return None
 
 
+def clean_text(s):
+    """PPT 텍스트로 넣을 수 없는 제어문자(예: 복사/붙여넣기로 딸려오는 숨은 줄바꿈)를 공백으로 치환."""
+    if not isinstance(s, str):
+        return s
+    return re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f]", " ", s)
+
+
 def set_para_text(paragraph, new_text):
     runs = paragraph.runs
     if not runs:
         return
-    runs[0].text = new_text
+    runs[0].text = clean_text(new_text)
     for r in runs[1:]:
         r.text = ""
 
@@ -53,8 +60,12 @@ def clear_shape_text(shape):
 def fill_text(slide, d):
     S = lambda sid: find_by_id(slide.shapes, sid)
 
-    # 제목 / 작성일
-    set_shape_text(S(3), f"{d['title']} 시장조사 보고서")
+    # 제목 / 작성일 (제목에 "시장조사 보고서"를 이미 포함해서 입력해도 중복 안 붙게 처리)
+    title = d["title"].strip()
+    suffix = "시장조사 보고서"
+    if title.endswith(suffix):
+        title = title[: -len(suffix)].strip()
+    set_shape_text(S(3), f"{title} {suffix}")
     set_shape_text(S(4), f"’{d['date']}  ㅣ  건축·주택마케팅팀")
 
     # 지역등급 뱃지 (그룹 68 내부 #70)
@@ -103,14 +114,14 @@ def fill_text(slide, d):
     grades = d["grade_table"]  # dict: supply, price, deal, presale, unsold
     order = ["supply", "price", "deal", "presale", "unsold"]
     for col, key in enumerate(order, start=1):
-        tbl.cell(2, col).text_frame.paragraphs[0].runs[0].text = grades[key]
+        tbl.cell(2, col).text_frame.paragraphs[0].runs[0].text = clean_text(grades[key])
 
     # 표 2 (입지/수급/브랜드/상품 판정) - shape_id 48, row 1
     tbl = S(48).table
     judge = d["judge_table"]  # dict: location, supply, brand, product
     order2 = ["location", "supply", "brand", "product"]
     for col, key in enumerate(order2):
-        tbl.cell(1, col).text_frame.paragraphs[0].runs[0].text = judge[key]
+        tbl.cell(1, col).text_frame.paragraphs[0].runs[0].text = clean_text(judge[key])
 
     # 작성자 가이드 문구(안내용 콜아웃) 비우기 - 최종 보고서에는 불필요
     for gid in (13, 14, 19):
@@ -206,6 +217,9 @@ def main():
         sys.exit(1)
     data_path, out_path = sys.argv[1], sys.argv[2]
     d = json.load(open(data_path, encoding="utf-8"))
+    # 입력폼에서 비워둔 항목이 있어도 에러 없이 빈 문자열로 처리
+    from collections import defaultdict
+    d = defaultdict(str, d)
 
     prs = Presentation(TEMPLATE)
     slide = prs.slides[0]
