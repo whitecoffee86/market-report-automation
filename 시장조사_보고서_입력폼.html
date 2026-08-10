@@ -8,10 +8,12 @@
     --deep:#002941; --heritage:#0085AD; --line:#dbe3e8; --bg:#f6f8f9;
     --ink:#12232d; --sub:#5c7480; --card:#ffffff; --accent-bg:#eef6f8;
   }
-  *{box-sizing:border-box;}
+  *{box-sizing:border-box; min-width:0;}
+  html{overflow-x:hidden;}
   body{
     margin:0; font-family:"Noto Sans KR","Malgun Gothic",sans-serif;
     background:var(--bg); color:var(--ink); padding:0 0 80px;
+    overflow-x:hidden;
   }
   header{
     background:var(--deep); color:#fff; padding:28px 32px;
@@ -19,7 +21,7 @@
   }
   header h1{margin:0 0 4px; font-size:20px; letter-spacing:-0.2px;}
   header p{margin:0; font-size:13px; color:#9fc4d4;}
-  main{max-width:920px; margin:0 auto; padding:28px 20px;}
+  main{max-width:920px; margin:0 auto; padding:28px 20px; width:100%;}
   .section{
     background:var(--card); border:1px solid var(--line); border-radius:10px;
     padding:22px 24px; margin-bottom:18px;
@@ -33,15 +35,15 @@
     display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;
   }
   .section .desc{font-size:12.5px; color:var(--sub); margin:0 0 16px;}
-  .grid{display:grid; grid-template-columns:1fr 1fr; gap:12px 16px;}
-  .grid.g3{grid-template-columns:1fr 1fr 1fr;}
-  .grid.g4{grid-template-columns:1fr 1fr 1fr 1fr;}
-  .grid.g5{grid-template-columns:1fr 1fr 1fr 1fr 1fr;}
-  .field{display:flex; flex-direction:column; gap:5px;}
+  .grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 16px;}
+  .grid.g3{grid-template-columns:repeat(auto-fit,minmax(130px,1fr));}
+  .grid.g4{grid-template-columns:repeat(auto-fit,minmax(120px,1fr));}
+  .grid.g5{grid-template-columns:repeat(auto-fit,minmax(90px,1fr));}
+  .field{display:flex; flex-direction:column; gap:5px; min-width:0;}
   .field.full{grid-column:1/-1;}
   label{font-size:12px; color:var(--sub); font-weight:600;}
   input,textarea,select{
-    border:1px solid var(--line); border-radius:6px; padding:8px 10px;
+    border:1px solid var(--line); border-radius:6px; padding:8px 10px; width:100%;
     font-size:13.5px; font-family:inherit; color:var(--ink); background:#fff;
   }
   input:focus,textarea:focus,select:focus{outline:2px solid var(--heritage); outline-offset:-1px;}
@@ -51,12 +53,16 @@
     padding:10px 0; border-bottom:1px dashed var(--line);
   }
   .repeat-row:last-child{border-bottom:none;}
-  .radar-row{display:grid; grid-template-columns:110px repeat(5,1fr); gap:8px; align-items:center; margin-bottom:8px;}
+  .scroll-x{overflow-x:auto; -webkit-overflow-scrolling:touch; margin:0 -2px; padding:0 2px;}
+  .radar-row{display:grid; grid-template-columns:100px repeat(5,minmax(64px,1fr)); gap:8px; align-items:center; margin-bottom:8px; min-width:520px;}
   .radar-row .rname{font-size:12.5px; font-weight:600; color:var(--deep);}
-  .radar-head{display:grid; grid-template-columns:110px repeat(5,1fr); gap:8px; margin-bottom:6px;}
+  .radar-head{display:grid; grid-template-columns:100px repeat(5,minmax(64px,1fr)); gap:8px; margin-bottom:6px; min-width:520px;}
   .radar-head span{font-size:11px; color:var(--sub); text-align:center;}
-  .stock-grid{display:grid; grid-template-columns:1fr repeat(3,1fr); gap:8px; margin-bottom:6px;}
+  .stock-grid{display:grid; grid-template-columns:minmax(110px,1.4fr) repeat(3,minmax(70px,1fr)); gap:8px; margin-bottom:6px; min-width:420px;}
   .stock-head span{font-size:11px; color:var(--sub);}
+  .dong-count-row{display:flex; align-items:center; gap:10px; margin-bottom:12px;}
+  .dong-count-row select{width:auto; min-width:70px;}
+  .dong-count-row label{font-size:12.5px; color:var(--ink); font-weight:600;}
   footer{
     position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid var(--line);
     padding:14px 20px; display:flex; justify-content:center; gap:12px; box-shadow:0 -4px 14px rgba(0,0,0,.06);
@@ -147,20 +153,32 @@
     </div>
 
     <p class="desc" style="margin-top:16px;">오각형 평점 (0~5점) — 입지(35) / 브랜드(15) / 단지(40) / 가격수준(10) / 연식(50)</p>
-    <div class="radar-head"><span></span><span>입지</span><span>브랜드</span><span>단지</span><span>가격수준</span><span>연식</span></div>
-    <div class="radar-row"><span class="rname">비교단지1</span>
-      <input id="r1_1" placeholder="1.14"><input id="r1_2" placeholder="5"><input id="r1_3" placeholder="3"><input id="r1_4" placeholder="4"><input id="r1_5" placeholder="4.25"></div>
-    <div class="radar-row"><span class="rname">비교단지2</span>
-      <input id="r2_1" placeholder="1.86"><input id="r2_2" placeholder="3"><input id="r2_3" placeholder="3"><input id="r2_4" placeholder="4"><input id="r2_5" placeholder="1"></div>
-    <div class="radar-row"><span class="rname">SITE</span>
-      <input id="r3_1" placeholder="1.71"><input id="r3_2" placeholder="4.25"><input id="r3_3" placeholder="4"><input id="r3_4" placeholder="4"><input id="r3_5" placeholder="5"></div>
+    <div class="scroll-x">
+      <div class="radar-head"><span></span><span>입지</span><span>브랜드</span><span>단지</span><span>가격수준</span><span>연식</span></div>
+      <div class="radar-row"><span class="rname">비교단지1</span>
+        <input id="r1_1" placeholder="1.14"><input id="r1_2" placeholder="5"><input id="r1_3" placeholder="3"><input id="r1_4" placeholder="4"><input id="r1_5" placeholder="4.25"></div>
+      <div class="radar-row"><span class="rname">비교단지2</span>
+        <input id="r2_1" placeholder="1.86"><input id="r2_2" placeholder="3"><input id="r2_3" placeholder="3"><input id="r2_4" placeholder="4"><input id="r2_5" placeholder="1"></div>
+      <div class="radar-row"><span class="rname">SITE</span>
+        <input id="r3_1" placeholder="1.71"><input id="r3_2" placeholder="4.25"><input id="r3_3" placeholder="4"><input id="r3_4" placeholder="4"><input id="r3_5" placeholder="5"></div>
+    </div>
   </div>
 
   <div class="section">
-    <h2><span class="num">6</span>고가·평균·저가 비교 (동별 5곳)</h2>
-    <p class="desc">지역 내 5개 동(또는 권역)의 고가/평균/저가 및 대표 단지 라벨</p>
-    <div class="stock-grid stock-head"><span>동(권역)명</span><span>고가(억)</span><span>평균가(억)</span><span>저가(억)</span></div>
-    <div id="stockRows"></div>
+    <h2><span class="num">6</span>고가·평균·저가 비교 (동별 비교)</h2>
+    <p class="desc">지역 내 동(또는 권역)의 고가/평균/저가 및 대표 단지 라벨 — 차트 구조상 3~5개까지 지원합니다</p>
+    <div class="dong-count-row">
+      <label>사용할 동 개수</label>
+      <select id="dongCount">
+        <option value="3">3개</option>
+        <option value="4">4개</option>
+        <option value="5" selected>5개</option>
+      </select>
+    </div>
+    <div class="scroll-x">
+      <div class="stock-grid stock-head"><span>동(권역)명</span><span>고가(억)</span><span>평균가(억)</span><span>저가(억)</span></div>
+      <div id="stockRows"></div>
+    </div>
 
     <p class="desc" style="margin-top:16px;">동별 대표단지 라벨 (차트 상단에 표기)</p>
     <div id="labelRows"></div>
@@ -210,12 +228,15 @@
 </footer>
 
 <script>
-const dongCount = 5;
+const MAX_DONG = 5;
 const stockRows = document.getElementById('stockRows');
 const labelRows = document.getElementById('labelRows');
-for(let i=0;i<dongCount;i++){
+const dongCountSelect = document.getElementById('dongCount');
+
+for(let i=0;i<MAX_DONG;i++){
   const row = document.createElement('div');
   row.className = 'stock-grid';
+  row.dataset.dongIdx = i;
   row.innerHTML = `
     <input id="dong_name_${i}" placeholder="동 이름 ${i+1}">
     <input id="dong_high_${i}" placeholder="고가">
@@ -225,6 +246,7 @@ for(let i=0;i<dongCount;i++){
 
   const lrow = document.createElement('div');
   lrow.className = 'repeat-row';
+  lrow.dataset.dongIdx = i;
   lrow.innerHTML = `
     <div class="field"><label>단지명 ${i+1}</label><input id="label_name_${i}" placeholder="단지명"></div>
     <div class="field"><label>준공(예 '19.06)</label><input id="label_built_${i}" placeholder="'19.06"></div>
@@ -232,12 +254,23 @@ for(let i=0;i<dongCount;i++){
   labelRows.appendChild(lrow);
 }
 
+function applyDongCount(){
+  const n = parseInt(dongCountSelect.value, 10);
+  document.querySelectorAll('[data-dong-idx]').forEach(el=>{
+    const idx = parseInt(el.dataset.dongIdx, 10);
+    el.style.display = idx < n ? '' : 'none';
+  });
+}
+dongCountSelect.addEventListener('change', applyDongCount);
+applyDongCount();
+
 function v(id){ return document.getElementById(id).value.trim(); }
 function num(id){ const x = parseFloat(v(id)); return isNaN(x)?0:x; }
 
 function buildData(){
+  const n = parseInt(dongCountSelect.value, 10);
   const stock_dongs=[], high=[], low=[], avg=[], stock_labels=[];
-  for(let i=0;i<dongCount;i++){
+  for(let i=0;i<n;i++){
     stock_dongs.push(v(`dong_name_${i}`));
     high.push(num(`dong_high_${i}`));
     avg.push(num(`dong_avg_${i}`));

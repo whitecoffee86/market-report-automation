@@ -88,10 +88,15 @@ def fill_text(slide, d):
     set_shape_text(S(64), d["hierarchy_note"])
     set_shape_text(S(72), f"<{d['region_name']} 평균  {d['region_avg_eok']}억>")
 
-    # 비교단지 라벨 5개 (고가/저가 차트 옆)
+    # 비교단지 라벨 (고가/저가 차트 옆, 최대 5개 슬롯 - 원본 템플릿 레이아웃 한계)
     label_ids = [79, 80, 81, 82, 83]
-    for sid, item in zip(label_ids, d["stock_labels"]):
-        set_shape_text(S(sid), f"{item['name']} [{item['built']}, {item['units']}세대]")
+    labels = d["stock_labels"]
+    for i, sid in enumerate(label_ids):
+        if i < len(labels):
+            item = labels[i]
+            set_shape_text(S(sid), f"{item['name']} [{item['built']}, {item['units']}세대]")
+        else:
+            clear_shape_text(S(sid))
 
     # 표 1 (수급/가격/거래/분양/미분양 등급) - shape_id 5, row 2
     tbl = S(5).table
@@ -137,64 +142,59 @@ def fill_charts(slide, d):
 
 
 def fill_stock_chart(pptx_path, d):
-    """chart3.xml (stockChart, 고가/저가/평균가 x 5개 동) - python-pptx 미지원이라 XML 직접 수정."""
+    """chart3.xml (stockChart, 고가/저가/평균가 x N개 동, N=3~5) - python-pptx 미지원이라 XML 직접 수정.
+    카테고리 개수가 원본(5개)과 다를 수 있으므로 c:pt 요소 자체를 지우고 다시 생성한다."""
+    from lxml import etree
+
+    C_NS = "http://schemas.openxmlformats.org/drawingml/2006/chart"
+    NS = {"c": C_NS}
+
     tmp_dir = "unpacked_stock_tmp"
     shutil.rmtree(tmp_dir, ignore_errors=True)
     with zipfile.ZipFile(pptx_path) as z:
         z.extractall(tmp_dir)
 
     chart_path = f"{tmp_dir}/ppt/charts/chart3.xml"
-    xml = open(chart_path, encoding="utf-8").read()
 
-    dongs = d["stock_dongs"]  # list of 5 dong names
-    series = d["stock_series"]  # dict: high, low, avg -> list of 5 values
+    dongs = d["stock_dongs"]           # N개 동 이름
+    series = d["stock_series"]         # dict: high, low, avg -> N개 값
+    n = len(dongs)
+    if n < 3 or n > 5:
+        raise ValueError("고가/평균/저가 비교는 3~5개 동만 지원합니다 (원본 템플릿 레이아웃 제약).")
 
-    # 카테고리(동 이름) 치환: 5개 동 이름이 반복 등장(series 3개 x 5개 = 15회)
-    old_dongs = re.findall(r"<c:pt idx=\"\d+\"><c:v>([^<]+)</c:v></c:pt>", xml)
-    # 카테고리 strCache 블록만 골라 교체 (숫자가 아닌 값)
-    def repl_cat_block(match):
-        block = match.group(0)
-        for i, name in enumerate(dongs):
-            block = re.sub(
-                rf'(<c:pt idx="{i}"><c:v>)[^<]*(</c:v></c:pt>)',
-                rf"\g<1>{name}\g<2>",
-                block,
-                count=1,
-            )
-        return block
+    tree = etree.parse(chart_path)
+    root = tree.getroot()
+    sers = root.findall(".//c:ser", NS)
+    order = ["high", "low", "avg"]  # 원본 chart3.xml의 시리즈 순서 (고가/저가/평균가)
 
-    xml = re.sub(r"<c:cat>.*?</c:cat>", repl_cat_block, xml, flags=re.S)
+    def rebuild_pts(cache_el, values):
+        pt_count = cache_el.find("c:ptCount", NS)
+        pt_count.set("val", str(len(values)))
+        for pt in cache_el.findall("c:pt", NS):
+            cache_el.remove(pt)
+        for i, val in enumerate(values):
+            pt = etree.SubElement(cache_el, f"{{{C_NS}}}pt")
+            pt.set("idx", str(i))
+            v_el = etree.SubElement(pt, f"{{{C_NS}}}v")
+            v_el.text = str(val)
 
-    # 값(numCache) 치환: 시리즈 순서는 고가/저가/평균가 (chart3 원본 구조 기준)
-    ser_blocks = re.findall(r"<c:ser>.*?</c:ser>", xml, flags=re.S)
-    order = ["high", "low", "avg"]
-    new_xml = xml
-    for ser_xml, key in zip(ser_blocks, order):
-        vals = series[key]
-        new_ser = ser_xml
-        for i, v in enumerate(vals):
-            new_ser = re.sub(
-                rf'(<c:val>.*?<c:pt idx="{i}"><c:v>)[^<]*(</c:v>)',
-                rf"\g<1>{v}\g<2>",
-                new_ser,
-                count=1,
-                flags=re.S,
-            )
-        new_xml = new_xml.replace(ser_xml, new_ser, 1)
+    for ser, key in zip(sers, order):
+        cat_cache = ser.find(".//c:cat//c:strCache", NS)
+        rebuild_pts(cat_cache, dongs)
 
-    with open(chart_path, "w", encoding="utf-8") as f:
-        f.write(new_xml)
+        num_cache = ser.find(".//c:val//c:numCache", NS)
+        rebuild_pts(num_cache, series[key])
+
+    tree.write(chart_path, xml_declaration=True, encoding="UTF-8", standalone=True)
 
     out_tmp = pptx_path + ".tmp"
-    if zipfile_exists := True:
-        import os
-        if os.path.exists(out_tmp):
-            os.remove(out_tmp)
+    if os.path.exists(out_tmp):
+        os.remove(out_tmp)
     with zipfile.ZipFile(out_tmp, "w", zipfile.ZIP_DEFLATED) as zf:
-        for root, _, files in __import__("os").walk(tmp_dir):
+        for root_dir, _, files in os.walk(tmp_dir):
             for file in files:
-                full = __import__("os").path.join(root, file)
-                rel = __import__("os").path.relpath(full, tmp_dir)
+                full = os.path.join(root_dir, file)
+                rel = os.path.relpath(full, tmp_dir)
                 zf.write(full, rel)
     shutil.move(out_tmp, pptx_path)
     shutil.rmtree(tmp_dir, ignore_errors=True)
