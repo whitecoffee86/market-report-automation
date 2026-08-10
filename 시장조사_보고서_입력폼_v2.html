@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>시장조사 보고서 데이터 입력 (v2)</title>
+<style>
+  :root{
+    --deep:#002941; --heritage:#0085AD; --line:#dbe3e8; --bg:#f6f8f9;
+    --ink:#12232d; --sub:#5c7480; --card:#ffffff; --accent-bg:#eef6f8;
+  }
+  *{box-sizing:border-box; min-width:0;}
+  html{overflow-x:hidden;}
+  body{
+    margin:0; font-family:"Noto Sans KR","Malgun Gothic",sans-serif;
+    background:var(--bg); color:var(--ink); padding:0 0 80px;
+    overflow-x:hidden;
+  }
+  header{
+    background:var(--deep); color:#fff; padding:28px 32px;
+    position:sticky; top:0; z-index:10;
+  }
+  header h1{margin:0 0 4px; font-size:20px; letter-spacing:-0.2px;}
+  header p{margin:0; font-size:13px; color:#9fc4d4;}
+  main{max-width:920px; margin:0 auto; padding:28px 20px; width:100%;}
+  .section{
+    background:var(--card); border:1px solid var(--line); border-radius:10px;
+    padding:22px 24px; margin-bottom:18px;
+  }
+  .section h2{
+    font-size:15px; margin:0 0 4px; color:var(--deep);
+    display:flex; align-items:center; gap:8px;
+  }
+  .section h2 .num{
+    background:var(--heritage); color:#fff; width:22px; height:22px; border-radius:50%;
+    display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;
+  }
+  .section .desc{font-size:12.5px; color:var(--sub); margin:0 0 16px;}
+  .subhead{
+    font-size:12.5px; font-weight:700; color:var(--deep); margin:18px 0 6px;
+    padding-top:14px; border-top:1px dashed var(--line);
+  }
+  .subhead:first-of-type{border-top:none; padding-top:0; margin-top:0;}
+  .subhead .tag{
+    display:inline-block; background:var(--accent-bg); color:var(--heritage);
+    font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:4px; margin-left:6px;
+  }
+  .grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 16px;}
+  .grid.g3{grid-template-columns:repeat(auto-fit,minmax(130px,1fr));}
+  .grid.g4{grid-template-columns:repeat(auto-fit,minmax(120px,1fr));}
+  .grid.g5{grid-template-columns:repeat(auto-fit,minmax(90px,1fr));}
+  .field{display:flex; flex-direction:column; gap:5px; min-width:0;}
+  .field.full{grid-column:1/-1;}
+  label{font-size:12px; color:var(--sub); font-weight:600;}
+  input,textarea,select{
+    border:1px solid var(--line); border-radius:6px; padding:8px 10px; width:100%;
+    font-size:13.5px; font-family:inherit; color:var(--ink); background:#fff;
+  }
+  input:focus,textarea:focus,select:focus{outline:2px solid var(--heritage); outline-offset:-1px;}
+  textarea{resize:vertical; min-height:44px;}
+  .repeat-row{
+    display:grid; grid-template-columns:2fr 1fr 1fr; gap:10px; align-items:end;
+    padding:10px 0; border-bottom:1px dashed var(--line);
+  }
+  .repeat-row:last-child{border-bottom:none;}
+  .scroll-x{overflow-x:auto; -webkit-overflow-scrolling:touch; margin:0 -2px; padding:0 2px;}
+  .radar-row{display:grid; grid-template-columns:100px repeat(5,minmax(64px,1fr)); gap:8px; align-items:center; margin-bottom:8px; min-width:520px;}
+  .radar-row .rname{font-size:12.5px; font-weight:600; color:var(--deep);}
+  .radar-head{display:grid; grid-template-columns:100px repeat(5,minmax(64px,1fr)); gap:8px; margin-bottom:6px; min-width:520px;}
+  .radar-head span{font-size:11px; color:var(--sub); text-align:center;}
+  .stock-grid{display:grid; grid-template-columns:minmax(110px,1.4fr) repeat(3,minmax(70px,1fr)); gap:8px; margin-bottom:6px; min-width:420px;}
+  .stock-head span{font-size:11px; color:var(--sub);}
+  .dong-count-row{display:flex; align-items:center; gap:10px; margin-bottom:12px;}
+  .dong-count-row select{width:auto; min-width:70px;}
+  .dong-count-row label{font-size:12.5px; color:var(--ink); font-weight:600;}
+  .opinion-row{display:flex; gap:8px; align-items:flex-start; margin-bottom:10px;}
+  .opinion-row textarea{flex:1;}
+  .opinion-row .rm{
+    background:#fff; color:#b23; border:1px solid var(--line); border-radius:6px;
+    width:30px; height:30px; flex:0 0 30px; cursor:pointer; font-size:14px; margin-top:2px;
+  }
+  .addBtn{
+    background:var(--accent-bg); color:var(--heritage); border:1px dashed var(--heritage);
+    border-radius:6px; padding:8px 14px; font-size:12.5px; font-weight:700; cursor:pointer;
+  }
+  footer{
+    position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid var(--line);
+    padding:14px 20px; display:flex; justify-content:center; gap:12px; box-shadow:0 -4px 14px rgba(0,0,0,.06);
+  }
+  button{
+    background:var(--deep); color:#fff; border:none; border-radius:7px; padding:12px 26px;
+    font-size:14px; font-weight:700; cursor:pointer; font-family:inherit;
+  }
+  button:hover{background:var(--heritage);}
+  button.secondary{background:#fff; color:var(--deep); border:1px solid var(--line);}
+  #status{font-size:12.5px; color:var(--sub); align-self:center;}
+  #status.ok{color:#1a7a4c; font-weight:700;}
+  .hint{font-size:11px; color:var(--sub); margin-top:2px;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>시장조사 보고서 데이터 입력 (v2 양식)</h1>
+  <p>값을 입력한 뒤 하단의 "JSON 파일 다운로드"를 눌러 GitHub data/ 폴더에 올리면 자동으로 완성된 PPT가 나옵니다.</p>
+</header>
+
+<main>
+
+  <div class="section">
+    <h2><span class="num">1</span>기본 정보</h2>
+    <p class="desc">보고서 제목과 작성일</p>
+    <div class="grid">
+      <div class="field full">
+        <label>사업지구명 (예: 사가정역인근 도심공공주택복합사업)</label>
+        <input id="title" placeholder="OO OO지구 OO사업">
+      </div>
+      <div class="field">
+        <label>작성일 (예: 26.7.14)</label>
+        <input id="date" placeholder="26.7.14">
+      </div>
+      <div class="field">
+        <label>파일명 (영문/숫자, 예: sagajeong)</label>
+        <input id="filename" placeholder="sagajeong">
+        <span class="hint">GitHub data/ 폴더에 올릴 파일명입니다. 결과 PPT 파일명도 동일해집니다.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">2</span>지역등급 · 적정분양가</h2>
+    <div class="grid g4">
+      <div class="field"><label>지역등급 (S/A/B/C/D)</label><input id="region_grade" maxlength="1" placeholder="A"></div>
+      <div class="field"><label>전용면적 평형(84㎡ 기준)</label><input id="pyeong" placeholder="35.5"></div>
+      <div class="field"><label>SITE 적정 평당가(만원)</label><input id="site_price_py" placeholder="3,950"></div>
+      <div class="field"><label>SITE 적정 총액(억)</label><input id="site_price_eok" placeholder="14.0"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">3</span>입지 코멘트</h2>
+    <div class="grid">
+      <div class="field full"><label>교통</label><input id="loc_transport" placeholder="사가정역(7호선)·동부간선도로 이용한 대중/광역교통접근 우수"></div>
+      <div class="field full"><label>생활</label><input id="loc_life" placeholder="면남초(300m) 도보가능 및 700m 내 중학교 3개 유"></div>
+      <div class="field full"><label>개발</label><input id="loc_dev" placeholder="중랑구 내 정비사업 추진에따른 주거환경 및 인프라 개선 기대"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">4</span>헤드메시지 · 지역위계</h2>
+
+    <div class="subhead">헤드메시지 <span class="tag">제목 바로 아래, 보통 2문장</span></div>
+    <p class="desc" style="margin-bottom:10px;">슬라이드 최상단, 제목 밑에 나오는 개요 요약입니다. "지역 위계" 섹션과는 다른 자리예요.</p>
+    <div class="grid">
+      <div class="field full"><label>헤드메시지 1문장</label><input id="region_summary_1" placeholder="사업대상지는 사가정역(7호선) 역세권 및 초교 인접하며, 면목동 인근 정비사업 추진에 따른 주변환경 개선도 기대되는 입지임"></div>
+      <div class="field full"><label>헤드메시지 2문장</label><input id="region_summary_2" placeholder="중랑구 수급여건 양호 및 주변 시세 상승추이로 신축 대기수요는 풍부 판단되나, 現 설계안 세대평면 및 동배치 매우 열위하여 상당한 개선이 필요함"></div>
+    </div>
+
+    <div class="subhead">지역위계 <span class="tag">"■ 지역 위계" 섹션 본문, 1문장</span></div>
+    <div class="grid">
+      <div class="field full"><label>지역위계 설명</label><input id="hierarchy_note" placeholder="당사업지 위치한 중랑구 면목동은 인접한 동대문구와 구리시 사이의 지역 위계 형성"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">5</span>비교단지 2곳 (막대그래프 · 오각형차트)</h2>
+    <p class="desc">막대그래프와 오각형(레이더) 차트에 함께 쓰입니다. 이 자리는 템플릿 구조상 정확히 2곳으로 고정되어 있어요.</p>
+    <div class="grid g4">
+      <div class="field"><label>비교단지1 이름</label><input id="compare1_name" placeholder="사가정센트럴아이파크"></div>
+      <div class="field"><label>입주월 (선택, 예 20.07)</label><input id="compare1_built" placeholder="20.07"></div>
+      <div class="field"><label>비교단지1 평당가</label><input id="compare1_price_py" placeholder="4,109"></div>
+      <div class="field"><label>비교단지1 총액(억)</label><input id="compare1_price_eok" placeholder="14.0"></div>
+      <div class="field"><label>비교단지2 이름</label><input id="compare2_name" placeholder="한양수자인사가정파크"></div>
+      <div class="field"><label>입주월 (선택, 예 19.11)</label><input id="compare2_built" placeholder="19.11"></div>
+      <div class="field"><label>비교단지2 평당가</label><input id="compare2_price_py" placeholder="3,376"></div>
+      <div class="field"><label>비교단지2 총액(억)</label><input id="compare2_price_eok" placeholder="11.5"></div>
+    </div>
+
+    <p class="desc" style="margin-top:16px;">오각형 평점 (0~5점) — 입지(35) / 브랜드(15) / 단지(40) / 가격수준(10) / 연식(50)</p>
+    <div class="scroll-x">
+      <div class="radar-head"><span></span><span>입지</span><span>브랜드</span><span>단지</span><span>가격수준</span><span>연식</span></div>
+      <div class="radar-row"><span class="rname">비교단지1</span>
+        <input id="r1_1" placeholder="2.14"><input id="r1_2" placeholder="5"><input id="r1_3" placeholder="3"><input id="r1_4" placeholder="5"><input id="r1_5" placeholder="3.25"></div>
+      <div class="radar-row"><span class="rname">비교단지2</span>
+        <input id="r2_1" placeholder="1.71"><input id="r2_2" placeholder="3"><input id="r2_3" placeholder="1.88"><input id="r2_4" placeholder="5"><input id="r2_5" placeholder="3"></div>
+      <div class="radar-row"><span class="rname">SITE</span>
+        <input id="r3_1" placeholder="2.43"><input id="r3_2" placeholder="5"><input id="r3_3" placeholder="2.5"><input id="r3_4" placeholder="5"><input id="r3_5" placeholder="5"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">6</span>고가·평균·저가 비교 (동별 비교)</h2>
+    <p class="desc">지역 내 동(또는 권역)의 고가/평균/저가 및 대표 단지 라벨 — 3~5개 지원, 라벨 위치도 개수에 맞춰 자동 재배치됩니다.</p>
+    <div class="dong-count-row">
+      <label>사용할 동 개수</label>
+      <select id="dongCount">
+        <option value="3">3개</option>
+        <option value="4">4개</option>
+        <option value="5" selected>5개</option>
+      </select>
+    </div>
+    <div class="scroll-x">
+      <div class="stock-grid stock-head"><span>동(권역)명</span><span>고가(억)</span><span>평균가(억)</span><span>저가(억)</span></div>
+      <div id="stockRows"></div>
+    </div>
+
+    <p class="desc" style="margin-top:16px;">동별 대표단지 라벨 (차트 상단에 표기)</p>
+    <div id="labelRows"></div>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">7</span>등급표 · 검토의견 판정 · 분양등급</h2>
+
+    <div class="subhead">등급표 <span class="tag">S/A는 파란 배지, B/C/D는 연한 배지로 자동 표시</span></div>
+    <div class="grid g5">
+      <div class="field"><label>수급</label><input id="g_supply" maxlength="1" placeholder="C"></div>
+      <div class="field"><label>가격</label><input id="g_price" maxlength="1" placeholder="S"></div>
+      <div class="field"><label>거래</label><input id="g_deal" maxlength="1" placeholder="B"></div>
+      <div class="field"><label>분양</label><input id="g_presale" maxlength="1" placeholder="A"></div>
+      <div class="field"><label>미분양</label><input id="g_unsold" maxlength="1" placeholder="S"></div>
+    </div>
+
+    <div class="subhead">검토의견 판정 <span class="tag">양호=초록 · 보통=주황 · 주의=빨강 자동 매칭</span></div>
+    <div class="grid g3">
+      <div class="field"><label>입지 및 시장환경</label>
+        <select id="j_location"><option>양호</option><option>보통</option><option>주의</option></select></div>
+      <div class="field"><label>상품</label>
+        <select id="j_product"><option>양호</option><option>보통</option><option>주의</option></select></div>
+      <div class="field"><label>브랜드 영향</label>
+        <select id="j_brand"><option>양호</option><option>보통</option><option>주의</option></select></div>
+    </div>
+
+    <div class="subhead">분양등급 <span class="tag">등급만 고르면 개월수(D+n M)는 자동으로 채워짐</span></div>
+    <div class="grid g3">
+      <div class="field"><label>최종 분양등급</label>
+        <select id="final_grade"><option>S</option><option selected>A</option><option>B</option><option>C</option><option>D</option></select></div>
+      <div class="field"><label>개월수 직접 지정 (선택, 비워두면 자동)</label><input id="final_grade_note" placeholder="예: D+4M"></div>
+    </div>
+    <p class="hint">자동 매핑 — S: D+1M · A: D+4M · B: D+8M · C: D+18M · D: D+19M 이상</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">8</span>검토의견 본문</h2>
+    <p class="desc">문장 개수는 자유입니다. "문장 추가" 버튼으로 몇 줄이든 늘리거나, X 버튼으로 줄일 수 있어요.</p>
+    <div id="opinionRows"></div>
+    <button class="addBtn" type="button" id="addOpinionBtn">+ 문장 추가</button>
+  </div>
+
+  <div class="section" style="margin-bottom:0;">
+    <h2><span class="num">9</span>생성된 JSON</h2>
+    <p class="desc">아래 "JSON 파일 다운로드" 버튼을 누르면 파일로 저장됩니다. GitHub data/ 폴더에 올려주세요.</p>
+    <textarea id="output" style="width:100%; min-height:160px; font-family:'SFMono-Regular',Consolas,monospace; font-size:11.5px;" readonly></textarea>
+  </div>
+
+</main>
+
+<footer>
+  <button class="secondary" id="genBtn" type="button">JSON 생성</button>
+  <button id="copyBtn" type="button">JSON 복사 (Claude용)</button>
+  <button id="downloadBtn" type="button">JSON 파일 다운로드 (GitHub용)</button>
+  <span id="status"></span>
+</footer>
+
+<script>
+const MAX_DONG = 5;
+const stockRows = document.getElementById('stockRows');
+const labelRows = document.getElementById('labelRows');
+const dongCountSelect = document.getElementById('dongCount');
+
+for(let i=0;i<MAX_DONG;i++){
+  const row = document.createElement('div');
+  row.className = 'stock-grid';
+  row.dataset.dongIdx = i;
+  row.innerHTML = `
+    <input id="dong_name_${i}" placeholder="동 이름 ${i+1}">
+    <input id="dong_high_${i}" placeholder="고가">
+    <input id="dong_avg_${i}" placeholder="평균">
+    <input id="dong_low_${i}" placeholder="저가">`;
+  stockRows.appendChild(row);
+
+  const lrow = document.createElement('div');
+  lrow.className = 'repeat-row';
+  lrow.dataset.dongIdx = i;
+  lrow.innerHTML = `
+    <div class="field"><label>단지명 ${i+1}</label><input id="label_name_${i}" placeholder="단지명"></div>
+    <div class="field"><label>준공(예 '19.06)</label><input id="label_built_${i}" placeholder="'19.06"></div>
+    <div class="field"><label>세대수</label><input id="label_units_${i}" placeholder="2,356"></div>`;
+  labelRows.appendChild(lrow);
+}
+
+function applyDongCount(){
+  const n = parseInt(dongCountSelect.value, 10);
+  document.querySelectorAll('[data-dong-idx]').forEach(el=>{
+    const idx = parseInt(el.dataset.dongIdx, 10);
+    el.style.display = idx < n ? '' : 'none';
+  });
+}
+dongCountSelect.addEventListener('change', applyDongCount);
+applyDongCount();
+
+// 검토의견 - 개수 가변 (추가/삭제)
+const opinionRows = document.getElementById('opinionRows');
+let opinionCount = 0;
+function addOpinionRow(prefill){
+  const idx = opinionCount++;
+  const row = document.createElement('div');
+  row.className = 'opinion-row';
+  row.dataset.opIdx = idx;
+  row.innerHTML = `
+    <textarea id="opinion_${idx}" placeholder="검토의견 문장을 입력하세요"></textarea>
+    <button type="button" class="rm" title="이 문장 삭제">×</button>`;
+  row.querySelector('.rm').addEventListener('click', ()=> row.remove());
+  if(prefill) row.querySelector('textarea').value = prefill;
+  opinionRows.appendChild(row);
+}
+document.getElementById('addOpinionBtn').addEventListener('click', ()=> addOpinionRow());
+// 기본 3줄로 시작
+addOpinionRow("現 설계안은 높은 용적률/건폐율 및 과밀한 동배치로 북향 조망 및 세대간 간섭 세대 다수 발생");
+addOpinionRow("일반분양 주력인 59~84㎡ 타워형 동구조로 맞통풍 불가하며 단위세대 비선호 평면구조");
+addOpinionRow("서울 역세권의 양호 입지에도 불구하고 열위한 상품으로 인한 단지의 부정적 인식이 우려되며, 당사 브랜드 가치를 고려한 대폭의 상품성 개선(평면개선·커뮤니티특화·마감재상향 등) 필요");
+
+function v(id){ const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+function num(id){ const x = parseFloat(v(id)); return isNaN(x)?0:x; }
+
+function buildData(){
+  const n = parseInt(dongCountSelect.value, 10);
+  const stock_dongs=[], high=[], low=[], avg=[], stock_labels=[];
+  for(let i=0;i<n;i++){
+    stock_dongs.push(v(`dong_name_${i}`));
+    high.push(num(`dong_high_${i}`));
+    avg.push(num(`dong_avg_${i}`));
+    low.push(num(`dong_low_${i}`));
+    stock_labels.push({name:v(`label_name_${i}`), built:v(`label_built_${i}`), units:v(`label_units_${i}`)});
+  }
+  const opinions = [];
+  opinionRows.querySelectorAll('textarea').forEach(ta=>{
+    if(ta.value.trim()) opinions.push(ta.value.trim());
+  });
+  return {
+    title: v('title'), date: v('date'),
+    region_grade: v('region_grade'), pyeong: v('pyeong'),
+    site_price_py: v('site_price_py'), site_price_eok: v('site_price_eok'),
+    compare1_name: v('compare1_name'), compare1_built: v('compare1_built'),
+    compare1_price_py: v('compare1_price_py'), compare1_price_eok: num('compare1_price_eok'),
+    compare2_name: v('compare2_name'), compare2_built: v('compare2_built'),
+    compare2_price_py: v('compare2_price_py'), compare2_price_eok: num('compare2_price_eok'),
+    loc_transport: v('loc_transport'), loc_life: v('loc_life'), loc_dev: v('loc_dev'),
+    region_summary_1: v('region_summary_1'), region_summary_2: v('region_summary_2'),
+    hierarchy_note: v('hierarchy_note'),
+    stock_labels: stock_labels,
+    stock_dongs: stock_dongs,
+    stock_series: { high: high, low: low, avg: avg },
+    grade_table: { supply: v('g_supply'), price: v('g_price'), deal: v('g_deal'), presale: v('g_presale'), unsold: v('g_unsold') },
+    judge_table: { location: v('j_location'), product: v('j_product'), brand: v('j_brand') },
+    final_grade: v('final_grade'), final_grade_note: v('final_grade_note'),
+    opinions: opinions,
+    radar: {
+      compare1: [num('r1_1'),num('r1_2'),num('r1_3'),num('r1_4'),num('r1_5')],
+      compare2: [num('r2_1'),num('r2_2'),num('r2_3'),num('r2_4'),num('r2_5')],
+      site: [num('r3_1'),num('r3_2'),num('r3_3'),num('r3_4'),num('r3_5')]
+    }
+  };
+}
+
+document.getElementById('genBtn').addEventListener('click', ()=>{
+  const data = buildData();
+  document.getElementById('output').value = JSON.stringify(data, null, 2);
+  document.getElementById('status').textContent = 'JSON이 생성되었습니다.';
+  document.getElementById('status').className = '';
+});
+
+document.getElementById('downloadBtn').addEventListener('click', ()=>{
+  const data = buildData();
+  const text = JSON.stringify(data, null, 2);
+  document.getElementById('output').value = text;
+  const fname = (v('filename') || 'report') + '.json';
+  const blob = new Blob([text], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = fname;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  document.getElementById('status').textContent = `${fname} 다운로드됨. GitHub data/ 폴더에 업로드하세요.`;
+  document.getElementById('status').className = 'ok';
+});
+
+document.getElementById('copyBtn').addEventListener('click', async ()=>{
+  const data = buildData();
+  const text = JSON.stringify(data, null, 2);
+  document.getElementById('output').value = text;
+  try{
+    await navigator.clipboard.writeText(text);
+    document.getElementById('status').textContent = '복사 완료! 채팅창에 붙여넣어 주세요.';
+    document.getElementById('status').className = 'ok';
+  }catch(e){
+    document.getElementById('output').select();
+    document.execCommand('copy');
+    document.getElementById('status').textContent = '복사 완료! (수동 선택됨)';
+    document.getElementById('status').className = 'ok';
+  }
+});
+</script>
+
+</body>
+</html>
