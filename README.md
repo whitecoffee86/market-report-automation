@@ -1,36 +1,24 @@
-# 시장조사 보고서 자동 생성 (GitHub Actions)
+# 시장조사 보고서 자동 생성 v2 (GitHub Actions)
 
-Claude 없이도, JSON 데이터만 올리면 자동으로 완성된 PPT가 나오는 구조입니다.
+260810_시장조사_양식_개선_v_2_0.pptx 기준. 사용법은 기존 v1과 동일합니다
+(data/ 폴더에 json 올리면 자동으로 output/ 에 pptx 생성).
 
-## 최초 1회 설정
+## v1과 다른 점 (데이터 스키마 변경사항)
 
-1. GitHub에 새 저장소 생성 (예: `market-report-automation`), 이 폴더 전체를 push
-2. 저장소 `Settings > Actions > General > Workflow permissions`에서
-   **"Read and write permissions"** 선택 (자동 커밋을 위해 필요)
+- `region_name`, `region_avg_eok` 필드 **삭제됨** (v2 템플릿에 해당 요소 없음)
+- `judge_table`는 이제 3개 키만 사용: `location`(입지및시장환경), `product`(상품), `brand`(브랜드영향)
+  - 값은 "양호" / "보통" / "주의" 중 하나 (v1의 "신중"이 "주의"로 변경됨)
+- `final_grade`, `final_grade_note` 필드 **추가됨** (예: "A", "D+4M" → "A 등급(D+4M)"으로 표시)
+- `grade_table`은 v1과 동일한 5개 키(supply/price/deal/presale/unsold), 값은 S/A/B/C/D
+  - S, A 등급은 파란 배지, 그 외는 연한 배지로 자동 표시
+- `compare1_built`, `compare2_built` **추가됨** (선택, 비교단지 입주월 표시용)
+- `opinions`: 검토의견을 **배열**로 입력 (문장 개수 자유, 2개든 5개든 가능)
+  - 기존 `opinion_1/2/3` 방식도 호환되지만 새로 만들 땐 `opinions` 배열 사용 권장
+- 나머지 필드(title, date, region_grade, 가격, 입지코멘트, stock_dongs/labels/series 등)는 v1과 동일
 
-## 평소 사용법 (팀원 포함, 코드 지식 불필요)
+## 주의사항
 
-1. `시장조사_보고서_입력폼.html`을 열어 데이터 입력
-2. **"JSON 파일 다운로드"** 버튼 클릭 → `xxx.json` 파일 저장
-3. GitHub 저장소의 `data/` 폴더로 이동 → **Add file → Upload files** → 방금 받은 json 업로드 → Commit
-4. 자동으로 GitHub Actions가 실행되어 (1~2분 소요) `output/` 폴더에 완성된 `.pptx`가 생성됩니다
-5. `output/` 폴더에서 파일을 열거나 다운로드
-
-## 폴더 구조
-
-```
-market-report-automation/
-├── template.pptx           # 원본 양식 (건드리지 마세요)
-├── generate_report.py       # 데이터 1건 → PPT 1개 변환 로직
-├── build_all.py              # data/ 안의 모든 json을 일괄 변환
-├── requirements.txt
-├── data/                     # 여기에 json을 올리면 자동 실행됨
-└── output/                   # 완성된 PPT가 여기 쌓임
-└── .github/workflows/generate.yml   # 자동화 설정
-```
-
-## 참고
-
-- `data/` 폴더의 json 파일명이 그대로 결과 PPT 파일명이 됩니다 (예: `pangyo_2jigu.json` → `pangyo_2jigu.pptx`)
-- 여러 명이 동시에 여러 json을 올려도 각각 별도 파일로 처리됩니다
-- 템플릿 디자인을 바꾸고 싶으면 `template.pptx`를 교체 + `generate_report.py`의 shape_id 매핑을 다시 확인해야 합니다 (이 부분은 구조가 바뀌면 다시 문의해주세요)
+- 문장이 너무 길면(특히 opinions 5줄 이상) 표/차트와 살짝 겹칠 수 있습니다.
+  실제 PowerPoint에서 열어 텍스트박스 크기를 살짝 조정하시면 됩니다.
+- 비교단지(막대그래프/오각형차트)는 템플릿 레이아웃상 **정확히 2개**로 고정되어 있습니다
+  (고가/저가 비교의 동 개수처럼 가변으로 만들려면 템플릿 자체 슬롯 추가가 필요합니다).
