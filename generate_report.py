@@ -27,6 +27,16 @@ R_NS = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
 
 JUDGE_COLORS = {"양호": "2E9E4F", "보통": "E8A93B", "주의": "C0392B"}
 GRADE_BLUE = "0070C0"
+GRADE_NOTE_MAP = {
+    "S": "D+1M",
+    "A": "D+4M",
+    "B": "D+8M",
+    "C": "D+18M",
+    "D": "D+19M 이상",
+}
+# 고가/평균/저가 차트의 플롯 영역(그래프 실제 그려지는 부분) 고정 비율
+# 차트 프레임 대비 [x, y, width, height] - 라벨 위치 계산과 차트 내부 모두 이 값을 기준으로 함
+PLOT_X, PLOT_Y, PLOT_W, PLOT_H = 0.08, 0.06, 0.90, 0.78
 
 
 def find_by_id(shapes, sid):
@@ -161,15 +171,22 @@ def fill_text(slide, d):
     # 지역위계 본문 (1문단)
     set_shape_text(S(64), d["hierarchy_note"])
 
-    # 비교단지 라벨 (최대 5개 슬롯)
+    # 비교단지 라벨 (최대 5개 슬롯) - 차트의 고정 플롯영역(PLOT_X~W) 기준으로 정확히 계산해서 배치
     label_ids = [79, 80, 81, 82, 83]
     labels = d["stock_labels"]
-    for i, sid in enumerate(label_ids):
-        if i < len(labels):
+    n = len(labels)
+    chart_shape = S(60)
+    plot_left = chart_shape.left + int(chart_shape.width * PLOT_X)
+    plot_width = int(chart_shape.width * PLOT_W)
+    label_shapes = [S(sid) for sid in label_ids]
+    for i, shp in enumerate(label_shapes):
+        if i < n:
             item = labels[i]
-            set_shape_text(S(sid), f"{item['name']} [{item['built']}, {item['units']}세대]")
+            set_shape_text(shp, f"{item['name']} [{item['built']}, {item['units']}세대]")
+            category_center = plot_left + int((i + 0.5) / n * plot_width)
+            shp.left = category_center - shp.width // 2
         else:
-            for p in S(sid).text_frame.paragraphs:
+            for p in shp.text_frame.paragraphs:
                 set_para_text(p, "")
 
     # 등급 배지 5개 (수급/가격/거래/분양/미분양) - oval id, 색상은 S/A=파랑, 나머지=연한색
@@ -193,7 +210,9 @@ def fill_text(slide, d):
         if color_hex:
             set_run_color(run, color_hex)
     grade_para = tbl.cell(1, 3).text_frame.paragraphs[0]
-    grade_para.runs[0].text = clean_text(f"{d['final_grade']} 등급({d['final_grade_note']})")
+    final_grade = d["final_grade"]
+    grade_note = d.get("final_grade_note") or GRADE_NOTE_MAP.get(final_grade, "")
+    grade_para.runs[0].text = clean_text(f"{final_grade} 등급({grade_note})")
     for extra_run in grade_para.runs[1:]:
         extra_run.text = ""
 
@@ -334,6 +353,23 @@ def fill_stock_chart(pptx_path, d):
     major_unit = val_ax.find("c:majorUnit", NS)
     if major_unit is not None:
         major_unit.set("val", str(unit))
+
+    # 플롯 영역(그래프가 실제로 그려지는 부분)을 고정 비율로 못박음.
+    # 이렇게 안 하면 축 숫자 자릿수(9억 vs 19억)에 따라 파워포인트가 매번 좌우 여백을
+    # 자동으로 다르게 계산해서, 라벨 위치 계산 기준이 흔들리는 문제가 있었음.
+    plot_area = root.find(".//c:plotArea", NS)
+    old_layout = plot_area.find("c:layout", NS)
+    plot_area.remove(old_layout)
+    new_layout = etree.Element(f"{{{C_NS}}}layout")
+    manual = etree.SubElement(new_layout, f"{{{C_NS}}}manualLayout")
+    etree.SubElement(manual, f"{{{C_NS}}}layoutTarget").set("val", "inner")
+    etree.SubElement(manual, f"{{{C_NS}}}xMode").set("val", "edge")
+    etree.SubElement(manual, f"{{{C_NS}}}yMode").set("val", "edge")
+    etree.SubElement(manual, f"{{{C_NS}}}x").set("val", str(PLOT_X))
+    etree.SubElement(manual, f"{{{C_NS}}}y").set("val", str(PLOT_Y))
+    etree.SubElement(manual, f"{{{C_NS}}}w").set("val", str(PLOT_W))
+    etree.SubElement(manual, f"{{{C_NS}}}h").set("val", str(PLOT_H))
+    plot_area.insert(0, new_layout)
 
     tree.write(chart_path, xml_declaration=True, encoding="UTF-8", standalone=True)
 
