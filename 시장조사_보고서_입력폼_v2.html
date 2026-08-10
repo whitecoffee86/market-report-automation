@@ -99,6 +99,17 @@
     display:inline-block; width:10px; height:10px; border-radius:50%;
     background:#ccc; vertical-align:middle; margin-left:4px; border:1px solid rgba(0,0,0,.15);
   }
+  .breakdown-table{border-collapse:collapse; min-width:600px; width:100%; font-size:12.5px;}
+  .breakdown-table th, .breakdown-table td{
+    border:1px solid var(--line); padding:5px 7px; text-align:center; white-space:nowrap;
+  }
+  .breakdown-table th{background:var(--deep); color:#fff; font-weight:600;}
+  .breakdown-table td:first-child, .breakdown-table td:nth-child(2){
+    background:var(--accent-bg); font-weight:600; color:var(--deep); text-align:left;
+  }
+  .breakdown-table input{padding:5px 6px; font-size:12.5px; text-align:center;}
+  .breakdown-table .calc-row td{background:#fffbe6; font-weight:700; color:var(--deep);}
+  .breakdown-table .hint{display:block; font-weight:400; font-size:10px;}
 </style>
 </head>
 <body>
@@ -129,70 +140,49 @@
       </div>
     </div>
   </div>
-
   <div class="section">
-    <h2><span class="num">2</span>지역등급 · 적정분양가</h2>
-    <div class="grid g4">
-      <div class="field"><label>지역등급 (S/A/B/C/D)</label><input id="region_grade" maxlength="1" placeholder="A"></div>
-      <div class="field"><label>전용면적 평형(84㎡ 기준)</label><input id="pyeong" placeholder="35.5"></div>
-      <div class="field"><label>SITE 적정 평당가(만원)</label><input id="site_price_py" placeholder="3,950"></div>
-      <div class="field"><label>SITE 적정 총액(억)</label><input id="site_price_eok" placeholder="14.0"></div>
+    <h2><span class="num">2</span>헤드메시지</h2>
+    <p class="desc">슬라이드 최상단, 제목 밑에 나오는 개요 요약(보통 2문장)입니다. "지역 위계" 섹션과는 다른 자리예요.</p>
+    <div class="grid">
+      <div class="field full"><label>헤드메시지 1문장</label><input id="region_summary_1" placeholder="사업대상지는 사가정역(7호선) 역세권 및 초교 인접하며, 면목동 인근 정비사업 추진에 따른 주변환경 개선도 기대되는 입지임"></div>
+      <div class="field full"><label>헤드메시지 2문장</label><input id="region_summary_2" placeholder="중랑구 수급여건 양호 및 주변 시세 상승추이로 신축 대기수요는 풍부 판단되나, 現 설계안 세대평면 및 동배치 매우 열위하여 상당한 개선이 필요함"></div>
     </div>
   </div>
 
   <div class="section">
-    <h2><span class="num">3</span>입지 코멘트</h2>
+    <h2><span class="num">3</span>지역등급</h2>
+
+    <div class="subhead">등급 배지</div>
+    <div class="grid g4">
+      <div class="field"><label>지역등급 (S/A/B/C/D)</label><input id="region_grade" maxlength="1" placeholder="A"></div>
+    </div>
+
+    <div class="subhead">입지 코멘트 <span class="tag">지역등급 박스 안 교통/생활/개발</span></div>
     <div class="grid">
       <div class="field full"><label>교통</label><input id="loc_transport" placeholder="사가정역(7호선)·동부간선도로 이용한 대중/광역교통접근 우수"></div>
       <div class="field full"><label>생활</label><input id="loc_life" placeholder="면남초(300m) 도보가능 및 700m 내 중학교 3개 유"></div>
       <div class="field full"><label>개발</label><input id="loc_dev" placeholder="중랑구 내 정비사업 추진에따른 주거환경 및 인프라 개선 기대"></div>
     </div>
+
+    <div class="subhead">등급표 <span class="tag">S/A는 파란 배지, B/C/D는 연한 배지로 자동 표시</span></div>
+    <div class="grid g5">
+      <div class="field"><label>수급 <span class="swatch" id="sw_g_supply"></span></label><input id="g_supply" maxlength="1" placeholder="C"></div>
+      <div class="field"><label>가격 <span class="swatch" id="sw_g_price"></span></label><input id="g_price" maxlength="1" placeholder="S"></div>
+      <div class="field"><label>거래 <span class="swatch" id="sw_g_deal"></span></label><input id="g_deal" maxlength="1" placeholder="B"></div>
+      <div class="field"><label>분양 <span class="swatch" id="sw_g_presale"></span></label><input id="g_presale" maxlength="1" placeholder="A"></div>
+      <div class="field"><label>미분양 <span class="swatch" id="sw_g_unsold"></span></label><input id="g_unsold" maxlength="1" placeholder="S"></div>
+    </div>
   </div>
 
   <div class="section">
-    <h2><span class="num">4</span>헤드메시지 · 지역위계</h2>
+    <h2><span class="num">4</span>지역위계</h2>
 
-    <div class="subhead">헤드메시지 <span class="tag">제목 바로 아래, 보통 2문장</span></div>
-    <p class="desc" style="margin-bottom:10px;">슬라이드 최상단, 제목 밑에 나오는 개요 요약입니다. "지역 위계" 섹션과는 다른 자리예요.</p>
-    <div class="grid">
-      <div class="field full"><label>헤드메시지 1문장</label><input id="region_summary_1" placeholder="사업대상지는 사가정역(7호선) 역세권 및 초교 인접하며, 면목동 인근 정비사업 추진에 따른 주변환경 개선도 기대되는 입지임"></div>
-      <div class="field full"><label>헤드메시지 2문장</label><input id="region_summary_2" placeholder="중랑구 수급여건 양호 및 주변 시세 상승추이로 신축 대기수요는 풍부 판단되나, 現 설계안 세대평면 및 동배치 매우 열위하여 상당한 개선이 필요함"></div>
-    </div>
-
-    <div class="subhead">지역위계 <span class="tag">"■ 지역 위계" 섹션 본문, 1문장</span></div>
+    <div class="subhead">지역위계 설명 <span class="tag">"■ 지역 위계" 섹션 본문, 1문장</span></div>
     <div class="grid">
       <div class="field full"><label>지역위계 설명</label><input id="hierarchy_note" placeholder="당사업지 위치한 중랑구 면목동은 인접한 동대문구와 구리시 사이의 지역 위계 형성"></div>
     </div>
-  </div>
 
-  <div class="section">
-    <h2><span class="num">5</span>비교단지 2곳 (막대그래프 · 오각형차트)</h2>
-    <p class="desc">막대그래프와 오각형(레이더) 차트에 함께 쓰입니다. 이 자리는 템플릿 구조상 정확히 2곳으로 고정되어 있어요.</p>
-    <div class="grid g4">
-      <div class="field"><label>비교단지1 이름</label><input id="compare1_name" placeholder="사가정센트럴아이파크"></div>
-      <div class="field"><label>입주월 (선택, 예 20.07)</label><input id="compare1_built" placeholder="20.07"></div>
-      <div class="field"><label>비교단지1 평당가</label><input id="compare1_price_py" placeholder="4,109"></div>
-      <div class="field"><label>비교단지1 총액(억)</label><input id="compare1_price_eok" placeholder="14.0"></div>
-      <div class="field"><label>비교단지2 이름</label><input id="compare2_name" placeholder="한양수자인사가정파크"></div>
-      <div class="field"><label>입주월 (선택, 예 19.11)</label><input id="compare2_built" placeholder="19.11"></div>
-      <div class="field"><label>비교단지2 평당가</label><input id="compare2_price_py" placeholder="3,376"></div>
-      <div class="field"><label>비교단지2 총액(억)</label><input id="compare2_price_eok" placeholder="11.5"></div>
-    </div>
-
-    <p class="desc" style="margin-top:16px;">오각형 평점 (0~5점) — 입지(35) / 브랜드(15) / 단지(40) / 가격수준(10) / 연식(50)</p>
-    <div class="scroll-x">
-      <div class="radar-head"><span></span><span>입지</span><span>브랜드</span><span>단지</span><span>가격수준</span><span>연식</span></div>
-      <div class="radar-row"><span class="rname">비교단지1</span>
-        <input id="r1_1" placeholder="2.14"><input id="r1_2" placeholder="5"><input id="r1_3" placeholder="3"><input id="r1_4" placeholder="5"><input id="r1_5" placeholder="3.25"></div>
-      <div class="radar-row"><span class="rname">비교단지2</span>
-        <input id="r2_1" placeholder="1.71"><input id="r2_2" placeholder="3"><input id="r2_3" placeholder="1.88"><input id="r2_4" placeholder="5"><input id="r2_5" placeholder="3"></div>
-      <div class="radar-row"><span class="rname">SITE</span>
-        <input id="r3_1" placeholder="2.43"><input id="r3_2" placeholder="5"><input id="r3_3" placeholder="2.5"><input id="r3_4" placeholder="5"><input id="r3_5" placeholder="5"></div>
-    </div>
-  </div>
-
-  <div class="section">
-    <h2><span class="num">6</span>고가·평균·저가 비교 (동별 비교)</h2>
+    <div class="subhead">고가·평균·저가 비교 (동별 비교)</div>
     <p class="desc">지역 내 동(또는 권역)의 고가/평균/저가 및 대표 단지 라벨 — 3~5개 지원, 라벨 위치도 개수에 맞춰 자동 재배치됩니다.</p>
     <div class="dong-count-row">
       <label>사용할 동 개수</label>
@@ -212,16 +202,73 @@
   </div>
 
   <div class="section">
-    <h2><span class="num">7</span>등급표 · 검토의견 판정 · 분양등급</h2>
+    <h2><span class="num">5</span>적정분양가</h2>
 
-    <div class="subhead">등급표 <span class="tag">S/A는 파란 배지, B/C/D는 연한 배지로 자동 표시</span></div>
-    <div class="grid g5">
-      <div class="field"><label>수급 <span class="swatch" id="sw_g_supply"></span></label><input id="g_supply" maxlength="1" placeholder="C"></div>
-      <div class="field"><label>가격 <span class="swatch" id="sw_g_price"></span></label><input id="g_price" maxlength="1" placeholder="S"></div>
-      <div class="field"><label>거래 <span class="swatch" id="sw_g_deal"></span></label><input id="g_deal" maxlength="1" placeholder="B"></div>
-      <div class="field"><label>분양 <span class="swatch" id="sw_g_presale"></span></label><input id="g_presale" maxlength="1" placeholder="A"></div>
-      <div class="field"><label>미분양 <span class="swatch" id="sw_g_unsold"></span></label><input id="g_unsold" maxlength="1" placeholder="S"></div>
+    <div class="subhead">SITE 적정가</div>
+    <div class="grid g4">
+      <div class="field"><label>전용면적 평형(84㎡ 기준)</label><input id="pyeong" placeholder="35.5"></div>
+      <div class="field"><label>SITE 적정 평당가(만원)</label><input id="site_price_py" placeholder="3,950"></div>
+      <div class="field"><label>SITE 적정 총액(억)</label><input id="site_price_eok" placeholder="14.0"></div>
     </div>
+
+    <div class="subhead">비교단지 2곳 <span class="tag">막대그래프 · 오각형차트에 함께 쓰임, 템플릿상 정확히 2곳 고정</span></div>
+    <div class="grid g4">
+      <div class="field"><label>비교단지1 이름</label><input id="compare1_name" placeholder="사가정센트럴아이파크"></div>
+      <div class="field"><label>입주월 (선택, 예 20.07)</label><input id="compare1_built" placeholder="20.07"></div>
+      <div class="field"><label>비교단지1 평당가</label><input id="compare1_price_py" placeholder="4,109"></div>
+      <div class="field"><label>비교단지1 총액(억)</label><input id="compare1_price_eok" placeholder="14.0"></div>
+      <div class="field"><label>비교단지2 이름</label><input id="compare2_name" placeholder="한양수자인사가정파크"></div>
+      <div class="field"><label>입주월 (선택, 예 19.11)</label><input id="compare2_built" placeholder="19.11"></div>
+      <div class="field"><label>비교단지2 평당가</label><input id="compare2_price_py" placeholder="3,376"></div>
+      <div class="field"><label>비교단지2 총액(억)</label><input id="compare2_price_eok" placeholder="11.5"></div>
+    </div>
+
+    <div class="subhead">오각형 세부 평점표 <span class="tag">항목별 원점수를 입력하면 5점 만점 점수가 자동 계산됩니다</span></div>
+    <div class="scroll-x">
+      <table class="breakdown-table" id="breakdownTable">
+        <thead>
+          <tr><th>구분</th><th>배점</th><th id="bd_h1">비교단지1</th><th id="bd_h2">비교단지2</th><th>SITE</th></tr>
+        </thead>
+        <tbody>
+          <tr><td rowspan="3">입지(35)</td><td>교통 (15)</td>
+            <td><input id="bd_c1_traffic" placeholder="4"></td><td><input id="bd_c2_traffic" placeholder="6"></td><td><input id="bd_site_traffic" placeholder="8"></td></tr>
+          <tr><td>주거편의 (10)</td>
+            <td><input id="bd_c1_living" placeholder="7"></td><td><input id="bd_c2_living" placeholder="2"></td><td><input id="bd_site_living" placeholder="3"></td></tr>
+          <tr><td>교육 (10)</td>
+            <td><input id="bd_c1_edu" placeholder="4"></td><td><input id="bd_c2_edu" placeholder="4"></td><td><input id="bd_site_edu" placeholder="6"></td></tr>
+          <tr><td>브랜드(15)</td><td>시공능력 (15)</td>
+            <td><input id="bd_c1_construction" placeholder="15"></td><td><input id="bd_c2_construction" placeholder="9"></td><td><input id="bd_site_construction" placeholder="15"></td></tr>
+          <tr><td rowspan="5">단지(40)</td><td>상품수준 (10)</td>
+            <td><input id="bd_c1_quality" placeholder="4"></td><td><input id="bd_c2_quality" placeholder="4"></td><td><input id="bd_site_quality" placeholder="7"></td></tr>
+          <tr><td>세대수 (10)</td>
+            <td><input id="bd_c1_units" placeholder="8"></td><td><input id="bd_c2_units" placeholder="3"></td><td><input id="bd_site_units" placeholder="8"></td></tr>
+          <tr><td>조망권 (10)</td>
+            <td><input id="bd_c1_view" placeholder="4"></td><td><input id="bd_c2_view" placeholder="3"></td><td><input id="bd_site_view" placeholder="0"></td></tr>
+          <tr><td>주차장 (5)</td>
+            <td><input id="bd_c1_parking" placeholder="4"></td><td><input id="bd_c2_parking" placeholder="2"></td><td><input id="bd_site_parking" placeholder="4"></td></tr>
+          <tr><td>건폐율 (5)</td>
+            <td><input id="bd_c1_far" placeholder="4"></td><td><input id="bd_c2_far" placeholder="3"></td><td><input id="bd_site_far" placeholder="1"></td></tr>
+          <tr><td colspan="2">가격수준 (10)</td>
+            <td><input id="bd_c1_price" placeholder="10"></td><td><input id="bd_c2_price" placeholder="10"></td><td><input id="bd_site_price" placeholder="10"></td></tr>
+          <tr><td colspan="2">가산점 (20) <span class="hint">(오각형엔 미반영, 참고용)</span></td>
+            <td><input id="bd_c1_bonus" placeholder="4"></td><td><input id="bd_c2_bonus" placeholder="4"></td><td><input id="bd_site_bonus" placeholder="6"></td></tr>
+          <tr><td colspan="2">감점 (-5) <span class="hint">(오각형엔 미반영, 참고용)</span></td>
+            <td><input id="bd_c1_penalty" placeholder="0"></td><td><input id="bd_c2_penalty" placeholder="-3"></td><td><input id="bd_site_penalty" placeholder="-2"></td></tr>
+          <tr class="calc-row"><td colspan="2">평점 합계 (참고용)</td>
+            <td id="bd_sum_c1">-</td><td id="bd_sum_c2">-</td><td id="bd_sum_site">-</td></tr>
+          <tr><td colspan="2">연차 (÷4 하여 연식 점수로 환산)</td>
+            <td><input id="bd_c1_age_years" placeholder="7"></td><td><input id="bd_c2_age_years" placeholder="8"></td><td><input id="bd_site_age_years" placeholder="0"></td></tr>
+        </tbody>
+        <tfoot>
+          <tr class="calc-row"><td colspan="2">→ 오각형 점수 (자동계산, 0~5점)</td>
+            <td id="bd_radar_c1">-</td><td id="bd_radar_c2">-</td><td id="bd_radar_site">-</td></tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">6</span>검토의견</h2>
 
     <div class="subhead">검토의견 판정 <span class="tag">양호=초록 · 보통=주황 · 주의=빨강 자동 매칭</span></div>
     <div class="grid g3">
@@ -240,21 +287,17 @@
       <div class="field"><label>개월수 직접 지정 (선택, 비워두면 자동)</label><input id="final_grade_note" placeholder="예: D+4M"></div>
     </div>
     <p class="hint">자동 매핑 — S: D+1M · A: D+4M · B: D+8M · C: D+18M · D: D+19M 이상</p>
-  </div>
 
-  <div class="section">
-    <h2><span class="num">8</span>검토의견 본문</h2>
-    <p class="desc">문장 개수는 자유입니다. "문장 추가" 버튼으로 몇 줄이든 늘리거나, X 버튼으로 줄일 수 있어요.</p>
+    <div class="subhead">검토의견 본문 <span class="tag">문장 개수 자유 — 추가/삭제 가능</span></div>
     <div id="opinionRows"></div>
     <button class="addBtn" type="button" id="addOpinionBtn">+ 문장 추가</button>
   </div>
 
   <div class="section" style="margin-bottom:0;">
-    <h2><span class="num">9</span>생성된 JSON</h2>
+    <h2><span class="num">7</span>생성된 JSON</h2>
     <p class="desc">아래 "JSON 파일 다운로드" 버튼을 누르면 파일로 저장됩니다. GitHub data/ 폴더에 올려주세요.</p>
     <textarea id="output" style="width:100%; min-height:160px; font-family:'SFMono-Regular',Consolas,monospace; font-size:11.5px;" readonly></textarea>
   </div>
-
 </main>
 
 <footer>
@@ -348,6 +391,47 @@ function updateJudgeSwatch(selectId, swatchId){
 document.getElementById('final_grade').addEventListener('change', ()=> updateGradeSwatch('final_grade','sw_final_grade'));
 updateGradeSwatch('final_grade','sw_final_grade');
 
+// 오각형 세부 평점표 실시간 계산
+function readBreakdown(who){
+  return {
+    traffic: num(`bd_${who}_traffic`), living: num(`bd_${who}_living`), edu: num(`bd_${who}_edu`),
+    construction: num(`bd_${who}_construction`),
+    quality: num(`bd_${who}_quality`), units: num(`bd_${who}_units`), view: num(`bd_${who}_view`),
+    parking: num(`bd_${who}_parking`), far: num(`bd_${who}_far`),
+    price: num(`bd_${who}_price`),
+    bonus: num(`bd_${who}_bonus`), penalty: num(`bd_${who}_penalty`),
+    age_years: num(`bd_${who}_age_years`)
+  };
+}
+function computeRadar(b){
+  const location = (b.traffic + b.living + b.edu) / 35 * 5;
+  const brand = b.construction / 15 * 5;
+  const complexScore = (b.quality + b.units + b.view + b.parking + b.far) / 40 * 5;
+  const price = b.price / 10 * 5;
+  const age = b.age_years / 4;
+  return [location, brand, complexScore, price, age];
+}
+function sumTotal(b){
+  return b.traffic+b.living+b.edu+b.construction+b.quality+b.units+b.view+b.parking+b.far+b.price+b.bonus+b.penalty;
+}
+function fmt(arr){ return arr.map(x=>x.toFixed(2)).join(' / '); }
+function refreshBreakdown(){
+  ['c1','c2','site'].forEach(who=>{
+    const b = readBreakdown(who);
+    document.getElementById(`bd_sum_${who}`).textContent = sumTotal(b).toFixed(1);
+    document.getElementById(`bd_radar_${who}`).textContent = fmt(computeRadar(b));
+  });
+}
+document.getElementById('breakdownTable').addEventListener('input', refreshBreakdown);
+function syncBreakdownHeaders(){
+  document.getElementById('bd_h1').textContent = v('compare1_name') || '비교단지1';
+  document.getElementById('bd_h2').textContent = v('compare2_name') || '비교단지2';
+}
+document.getElementById('compare1_name').addEventListener('input', syncBreakdownHeaders);
+document.getElementById('compare2_name').addEventListener('input', syncBreakdownHeaders);
+refreshBreakdown();
+syncBreakdownHeaders();
+
 function buildData(){
   const n = parseInt(dongCountSelect.value, 10);
   const stock_dongs=[], high=[], low=[], avg=[], stock_labels=[];
@@ -380,10 +464,10 @@ function buildData(){
     judge_table: { location: v('j_location'), product: v('j_product'), brand: v('j_brand') },
     final_grade: v('final_grade'), final_grade_note: v('final_grade_note'),
     opinions: opinions,
-    radar: {
-      compare1: [num('r1_1'),num('r1_2'),num('r1_3'),num('r1_4'),num('r1_5')],
-      compare2: [num('r2_1'),num('r2_2'),num('r2_3'),num('r2_4'),num('r2_5')],
-      site: [num('r3_1'),num('r3_2'),num('r3_3'),num('r3_4'),num('r3_5')]
+    radar_breakdown: {
+      compare1: readBreakdown('c1'),
+      compare2: readBreakdown('c2'),
+      site: readBreakdown('site')
     }
   };
 }
