@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "data/**.json"
+      - "*.json"
   workflow_dispatch: {}
 
 permissions:
@@ -25,11 +26,11 @@ jobs:
       - name: PPT 생성
         run: python build_all.py
 
-      - name: 결과물 커밋 (output/ 폴더)
+      - name: 결과물 커밋 (output/ 폴더 + data/ 정리)
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "자동 생성: 시장조사 보고서 PPT"
-          file_pattern: "output/*.pptx"
+          file_pattern: "output/*.pptx data/*.json *.json"
 
       - name: 워크플로우 아티팩트로도 업로드
         uses: actions/upload-artifact@v4
