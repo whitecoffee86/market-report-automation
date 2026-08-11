@@ -1,0 +1,136 @@
+{
+  "title": "부산 금정구 구서5구역 재건축사업",
+  "date": "26.08.05",
+  "region_grade": "B",
+  "pyeong": "33.4",
+  "site_price_py": "2,400",
+  "site_price_eok": "8.0",
+  "compare1_name": "e편한세상금정메종카운티",
+  "compare1_built": "'26.05",
+  "compare1_price_py": "2,034",
+  "compare1_price_eok": 6.9,
+  "compare2_name": "더샵금정위버시티",
+  "compare2_built": "'27.02",
+  "compare2_price_py": "1,961",
+  "compare2_price_eok": 6.7,
+  "loc_transport": "두실역(부산1호선), 중앙대로 및 구서IC(경부) 이용한 시내/광영 이동 양호",
+  "loc_life": "구서초 인접 및 구서동 학원가 도보이동 가능",
+  "loc_dev": "사업지 인근 구서1,4구역 재개발 진행에 따른 주변 인프라 개선 기대",
+  "region_summary_1": "사업대상지는 부산1호선 두실역 도보가능 입지로, 사업지 인근 대다수 15년 이상의 노후 단지인접하여 향후 지역 내 시세 리딩 예상됨.",
+  "region_summary_2": "총 800세대 중 일반분양세대 184세대 불과하며, 높은 주차대수 등 상품성 양호하여 적정가 분양시 대기 수요 양호 판단됨",
+  "hierarchy_note": "당사업지가 위치한 금정구는 상급지 동래구 대비 열위하며 중앙대로 따라 위계 발생",
+  "stock_labels": [
+    {
+      "name": "힐스테이트명륜트라디움",
+      "built": "'22.05",
+      "units": "874"
+    },
+    {
+      "name": "래미안장전",
+      "built": "'16.08",
+      "units": "1,938"
+    },
+    {
+      "name": "삼한골든뷰에듀스테이션",
+      "built": "'21.07",
+      "units": "610"
+    },
+    {
+      "name": "구서SK뷰1단지",
+      "built": "'16.08",
+      "units": "532"
+    }
+  ],
+  "stock_dongs": [
+    "명륜동(동래구)",
+    "장전동",
+    "부곡동",
+    "구서동"
+  ],
+  "stock_series": {
+    "high": [
+      10.1,
+      9.2,
+      6.1,
+      6.6
+    ],
+    "low": [
+      5.7,
+      4.3,
+      4,
+      3.8
+    ],
+    "avg": [
+      7.2,
+      4.7,
+      4.4,
+      4.3
+    ]
+  },
+  "grade_table": {
+    "supply": "A",
+    "price": "B",
+    "deal": "C",
+    "presale": "B",
+    "unsold": "A"
+  },
+  "judge_table": {
+    "location": "양호",
+    "product": "양호",
+    "brand": "양호"
+  },
+  "final_grade": "A",
+  "final_grade_note": "",
+  "opinions": [
+    "現 설계안은 높은 용적률/건폐율 및 과밀한 동배치로 북향 조망 및 세대간 간섭 세대 다수 발생",
+    "일반분양 주력인 59~84㎡ 타워형 동구조로 맞통풍 불가하며 단위세대 비선호 평면구조",
+    "서울 역세권의 양호 입지에도 불구하고 열위한 상품으로 인한 단지의 부정적 인식이 우려되며, 당사 브랜드 가치를 고려한 대폭의 상품성 개선(평면개선·커뮤니티특화·마감재상향 등) 필요"
+  ],
+  "radar_breakdown": {
+    "compare1": {
+      "traffic": 8,
+      "living": 2,
+      "edu": 6,
+      "construction": 15,
+      "quality": 8,
+      "units": 3,
+      "view": 3,
+      "parking": 2,
+      "far": 3,
+      "price": 5,
+      "bonus": 0,
+      "penalty": 0,
+      "age_years": 0
+    },
+    "compare2": {
+      "traffic": 6,
+      "living": 1,
+      "edu": 8,
+      "construction": 15,
+      "quality": 8,
+      "units": 6,
+      "view": 1,
+      "parking": 3,
+      "far": 5,
+      "price": 10,
+      "bonus": 2,
+      "penalty": 0,
+      "age_years": 0
+    },
+    "site": {
+      "traffic": 8,
+      "living": 5,
+      "edu": 10,
+      "construction": 15,
+      "quality": 10,
+      "units": 6,
+      "view": 3,
+      "parking": 4,
+      "far": 5,
+      "price": 9,
+      "bonus": 4,
+      "penalty": 0,
+      "age_years": 0
+    }
+  }
+}
